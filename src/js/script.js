@@ -2,122 +2,88 @@
 // http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/
 // http://tutorialzine.com/2013/04/services-chooser-backbone-js/
 
-var searchMeal = 'pasta';
 var applicationId = 'cce231b3';
 var applicationKey = 'b19085c7c7974513d3dd5df7073852d5';
 
 $(function() {
-/*  var Meal = Backbone.Model.extend({
-    defaults:{
-      title: 'meal type',
-      calories: 100,
-      selected: false
-    },
-
-    toggle: function() {
-      this.set('selected', !this.get('selected'));
-    }
+  var Meal = Backbone.Model.extend({
+    initialize: function(options) {}
   });
-*/
   // api blog post
   // http://blog.cloudoki.com/backbone-app-end-to-end-connecting-to-an-external-api/
-  // Populayting collection with Nutritionix APIs is exlained here:
+  // Populayting collection with Nutritionix APIs is explained here:
   // http://stackoverflow.com/questions/32143288/backbone-js-populating-my-collection-and-then-appending-it-to-the-page
   var MealList = Backbone.Collection.extend({
-    /*model: Meal,
-    getSelected: function() {
-      return this.where({selected: true});
-    }*/
-    url: "https://api.nutritionix.com/v1_1/search/"+ searchMeal +
-    "?results=0%3A20&cal_min=0&cal_max=50000" +
-    "&fields=item_name%2Cbrand_name%2Citem_id%2Cbrand_id&appId=" +
-    applicationId +"&appKey=" + applicationKey,
-
-    initialize: function(){
+    initialize: function(options) {
+      if (options.mealType)
+        this.mealType = options.mealType;
     },
 
+    url: function() {
+      return "https://api.nutritionix.com/v1_1/search/"+ this.mealType +
+        "?results=0%3A50&cal_min=0&cal_max=50000" +
+        "&fields=item_name%2Cbrand_name%2Cnf_calories%2Citem_id%2Cbrand_id&appId=" +
+        applicationId +"&appKey=" + applicationKey;
+    },
     //** 1. Function "parse" is a Backbone function to parse the response properly
-    parse:function(response){
+    parse: function(response) {
+      console.log(this.url);
+
       //** return the array inside response, when returning the array
       //** we left to Backone populate this collection
       return response.hits;
     }
   });
 
-/*  var meals = new MealList([
-    // this array needs to be retrieved using Nutritionix APIs
-    new Meal({ title: 'pizza', calories: 450}),
-		new Meal({ title: 'pasta', calories: 250}),
-		new Meal({ title: 'hot dog', calories: 350}),
-		new Meal({ title: 'hamburger', calories: 500})
-  ]);*/
-
-  /*var MealView = Backbone.View.extend({
-    tagName: 'li',
-    events:{
-      'click': 'toggleMeal'
+  var FoodSearch = Backbone.View.extend({
+    events: {
+      "click button": "fetchData"
     },
 
-    initialize: function(){
-      this.listenTo(this.model, 'change', this.render);
+    template: "<input type='text' placeholder='search'>" +
+               "<button>Search food</button>" +
+               "<ul id='food-list'></ul>",
+
+    initialize: function(options) {
+
     },
 
-    render: function(){
-      this.$el.html('<input type="checkbox" value="1" name="' + this.model.get('title') +
-        '" /> ' + this.model.get('title') + '<span>' + this.model.get('calories') + '</span>');
-        this.$('input').prop('selected', this.model.get('selected'));
-        return this;
+    render: function() {
+      this.$el.html(this.template);
+      return this;
     },
 
-    toggleMeal: function(){
-      this.model.toggle();
-    }
-  });*/
-
-  var App = Backbone.View.extend({
-    el: $('#main'),
-
-    initialize: function(){
-    /*  this.total = $('#total span');
-      this.list = $('#meals');
-      this.listenTo(meals, 'change', this.render);
-      meals.each(function(meal) {
-        var view = new MealView({ model: meal });
-        this.list.append(view.render().el);
-      }, this);*/
-
-      //** 2. the view must listen to an object inside in the view
-      //** so we create a new instance of MealList and save it into model var of the view
-      this.model = new MealList();
-      this.model.fetch();
-      this.listenTo(this.model, 'sync', this.render);
-      // Cache these selectors
-      // this.total = $('#total span');
-      this.list = $('#meals');
+    fetchData: function(data) {
+      var searchMeal = this.$el.find('input').val();
+      var foods = new MealList({mealType: searchMeal});
+      foods.fetch({success: this.renderfood.bind(this)});
     },
 
-    render: function(){
-      /*var total = 0;
-      _.each(meals.getSelected(), function(elem) {
-        total += elem.get('calories');
-      });
-      this.total.text(total);
-      return this;*/
-      //** 2. Continue
-      var terms = this.model;
-      // Calculate the total order amount by agregating
-      // the prices of only the checked elements
-      terms.each(function(term){
-          this.list.append("<li>"+ term.get('fields').item_name+"</li>");
-      }, this);
+    renderfood: function(food) {
+      var foodview;
+      for (var n in food.models) {
+        foodview = new FoodView({model: food.models[n]});
+        this.$el.find('#food-list').append(foodview.render().el);
+      }
     }
   });
-  new App();
-});
 
-/*var searchMeal = 'pasta';
-var applicationId = 'cce231b3';
-var applicationKey = 'b19085c7c7974513d3dd5df7073852d5';
-var nutritionixRequest = 'https://api.nutritionix.com/v1_1/search/'+ searchMeal +
-  '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=' +
-  applicationId +'&appKey=' + applicationKey;*/
+  var FoodView = Backbone.View.extend({
+    tagName: 'li',
+
+    initialize: function(options) {
+      if (options.model)
+      this.model = options.model;
+      console.log(this.model);
+    },
+
+    render: function() {
+
+      this.$el.html(this.model.attributes.fields.item_name+" ("+this.model.attributes.fields.nf_calories+" calories )");
+      return this;
+    }
+  });
+
+var search = new FoodSearch();
+$('#main').html(search.render().el);
+});
