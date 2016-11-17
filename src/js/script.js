@@ -9,6 +9,7 @@ $(function() {
   var Meal = Backbone.Model.extend({
     initialize: function(options) {}
   });
+
   // api blog post
   // http://blog.cloudoki.com/backbone-app-end-to-end-connecting-to-an-external-api/
   // Populayting collection with Nutritionix APIs is explained here:
@@ -45,7 +46,6 @@ $(function() {
                "<ul id='food-list'></ul>",
 
     initialize: function(options) {
-
     },
 
     render: function() {
@@ -70,6 +70,10 @@ $(function() {
     }
   });
 
+  var SavedFoods = Backbone.Collection.extend({
+    localStorage: new Backbone.LocalStorage("todos-backbone"),
+  });
+
   var FoodView = Backbone.View.extend({
 
     tagName: 'li',
@@ -91,12 +95,14 @@ $(function() {
       return this;
     },
 
-    add: function(data) {
-      console.log("added");
-    }
+    add: function(retrievedMeal) {
+      var view = new TodoView({model: retrievedMeal});
+      this.$("#todo-list").append(view.render().el);
+    },
 
   });
 
 var search = new FoodSearch();
 $('#main').html(search.render().el);
+var savedFoods = new SavedFoods();
 });
