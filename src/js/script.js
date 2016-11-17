@@ -25,23 +25,23 @@ $(function() {
         "&fields=item_name%2Cbrand_name%2Cnf_calories%2Citem_id%2Cbrand_id&appId=" +
         applicationId +"&appKey=" + applicationKey;
     },
+
     //** 1. Function "parse" is a Backbone function to parse the response properly
     parse: function(response) {
-      console.log(this.url);
-
       //** return the array inside response, when returning the array
       //** we left to Backone populate this collection
+      console.log(response.hits);
       return response.hits;
     }
   });
 
   var FoodSearch = Backbone.View.extend({
     events: {
-      "click button": "fetchData"
+      "click .search": "fetchData"
     },
 
     template: "<input type='text' placeholder='search'>" +
-               "<button>Search food</button>" +
+               "<button class='search'>Search food</button>" +
                "<ul id='food-list'></ul>",
 
     initialize: function(options) {
@@ -56,7 +56,9 @@ $(function() {
     fetchData: function(data) {
       var searchMeal = this.$el.find('input').val();
       var foods = new MealList({mealType: searchMeal});
-      foods.fetch({success: this.renderfood.bind(this)});
+      foods.fetch(
+        {success: this.renderfood.bind(this)}
+      );
     },
 
     renderfood: function(food) {
@@ -69,7 +71,12 @@ $(function() {
   });
 
   var FoodView = Backbone.View.extend({
+
     tagName: 'li',
+
+    events: {
+      "click .add": "add"
+    },
 
     initialize: function(options) {
       if (options.model)
@@ -78,10 +85,16 @@ $(function() {
     },
 
     render: function() {
-
-      this.$el.html(this.model.attributes.fields.item_name+" ("+this.model.attributes.fields.nf_calories+" calories )");
+      this.$el.html(this.model.attributes.fields.item_name+
+        " ("+this.model.attributes.fields.nf_calories+" calories )"+
+        " <button class='add'>ADD</button>");
       return this;
+    },
+
+    add: function(data) {
+      console.log("added");
     }
+
   });
 
 var search = new FoodSearch();
