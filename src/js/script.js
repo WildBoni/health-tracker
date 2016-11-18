@@ -41,7 +41,7 @@ $(function() {
     events: {
       "click .search": "fetchMeals"
     },
-
+    // preparing basic elelemts: a texbox, a button and a list container
     template: "<input type='text' placeholder='search'>" +
                "<button class='search'>Search meal</button>" +
                "<ul id='meal-list'></ul>",
@@ -53,19 +53,21 @@ $(function() {
       this.$el.html(this.template);
       return this;
     },
-
+    // check the input, assign it to a var and insert it into Nutritionix API url
     fetchMeals: function(data) {
       var searchMeal = this.$el.find('input').val();
       var meals = new MealList({mealType: searchMeal});
+      // fetch results
       meals.fetch(
         {success: this.rendermeal.bind(this)}
       );
     },
-
+    // assign every result to its MealView
     rendermeal: function(meal) {
       var mealview;
       for (var n in meal.models) {
         mealview = new MealView({model: meal.models[n]});
+        // MealView is a <li> that goes inside its <ul>
         this.$el.find('#meal-list').append(mealview.render().el);
       }
     }
@@ -90,6 +92,7 @@ $(function() {
     },
 
     render: function() {
+      // displaying meal name + calories amount and attaching an add button
       this.$el.html(this.model.attributes.fields.item_name+
         " ("+this.model.attributes.fields.nf_calories+" calories )"+
         " <button class='add'>ADD</button>");
@@ -102,7 +105,7 @@ $(function() {
 
   });
 
-var search = new MealSearch();
-$('#main').html(search.render().el);
-var savedMealss = new SavedMeals();
+  var search = new MealSearch();
+  $('#main').html(search.render().el);
+  var savedMealss = new SavedMeals();
 });
