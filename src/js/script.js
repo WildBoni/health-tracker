@@ -6,13 +6,15 @@ var applicationId = 'cce231b3';
 var applicationKey = 'b19085c7c7974513d3dd5df7073852d5';
 
 $(function() {
+  // not really using this module... Everything goes inside collection
+  // as explained in http://backbonejs.org/#API-integration
   var Meal = Backbone.Model.extend({
     initialize: function(options) {}
   });
 
   // api blog post
   // http://blog.cloudoki.com/backbone-app-end-to-end-connecting-to-an-external-api/
-  // Populayting collection with Nutritionix APIs is explained here:
+  // Populating collection with Nutritionix APIs is explained here:
   // http://stackoverflow.com/questions/32143288/backbone-js-populating-my-collection-and-then-appending-it-to-the-page
   var MealList = Backbone.Collection.extend({
     initialize: function(options) {
@@ -27,23 +29,22 @@ $(function() {
         applicationId +"&appKey=" + applicationKey;
     },
 
-    //** 1. Function "parse" is a Backbone function to parse the response properly
+    // parse method return the desired portion of API data
     parse: function(response) {
-      //** return the array inside response, when returning the array
-      //** we left to Backone populate this collection
+      // logs array of objects
       console.log(response.hits);
       return response.hits;
     }
   });
 
-  var FoodSearch = Backbone.View.extend({
+  var MealSearch = Backbone.View.extend({
     events: {
-      "click .search": "fetchData"
+      "click .search": "fetchMeals"
     },
 
     template: "<input type='text' placeholder='search'>" +
-               "<button class='search'>Search food</button>" +
-               "<ul id='food-list'></ul>",
+               "<button class='search'>Search meal</button>" +
+               "<ul id='meal-list'></ul>",
 
     initialize: function(options) {
     },
@@ -53,28 +54,28 @@ $(function() {
       return this;
     },
 
-    fetchData: function(data) {
+    fetchMeals: function(data) {
       var searchMeal = this.$el.find('input').val();
-      var foods = new MealList({mealType: searchMeal});
-      foods.fetch(
-        {success: this.renderfood.bind(this)}
+      var meals = new MealList({mealType: searchMeal});
+      meals.fetch(
+        {success: this.rendermeal.bind(this)}
       );
     },
 
-    renderfood: function(food) {
-      var foodview;
-      for (var n in food.models) {
-        foodview = new FoodView({model: food.models[n]});
-        this.$el.find('#food-list').append(foodview.render().el);
+    rendermeal: function(meal) {
+      var mealview;
+      for (var n in meal.models) {
+        mealview = new MealView({model: meal.models[n]});
+        this.$el.find('#meal-list').append(mealview.render().el);
       }
     }
   });
 
-  var SavedFoods = Backbone.Collection.extend({
-    localStorage: new Backbone.LocalStorage("todos-backbone"),
+  var SavedMeals = Backbone.Collection.extend({
+    // TODO: will use local storage for selected meals
   });
 
-  var FoodView = Backbone.View.extend({
+  var MealView = Backbone.View.extend({
 
     tagName: 'li',
 
@@ -96,13 +97,12 @@ $(function() {
     },
 
     add: function(retrievedMeal) {
-      var view = new TodoView({model: retrievedMeal});
-      this.$("#todo-list").append(view.render().el);
+      // TODO: adding selected meal to SavedMeals
     },
 
   });
 
-var search = new FoodSearch();
+var search = new MealSearch();
 $('#main').html(search.render().el);
-var savedFoods = new SavedFoods();
+var savedMealss = new SavedMeals();
 });
