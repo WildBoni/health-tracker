@@ -82,6 +82,7 @@ $(function() {
     defaults: function() {
       return {
         title: 'new saved meal',
+        calories: '0',
         order: SavedMeals.nextOrder()
       };
     }
@@ -99,6 +100,7 @@ $(function() {
 
   var SavedMeals = new SavedMealsList();
 
+  // A good post for Backbone noobs like me!
   // http://codebyexample.info/2012/03/06/backbone-baby-steps/
   var SavedMealView = Backbone.View.extend({
     el: $('#saved'),
@@ -130,8 +132,10 @@ $(function() {
     initialize: function(options) {
       if (options.model)
       this.model = options.model;
-      console.log(this.model);
+      //console.log(this.model);
       this.listenTo(SavedMeals, 'add', this.addOne);
+      this.listenTo(SavedMeals, 'reset', this.addAll);
+      this.listenTo(SavedMeals, 'all', this.render);
       SavedMeals.fetch();
     },
 
@@ -149,11 +153,16 @@ $(function() {
       console.log(this.$el.find('#saved-meals').append(view.render().el));
     },
 
+    addAll: function() {
+      SavedMeals.each(this.addOne, this);
+    },
+
     add: function(){
-      SavedMeals.create({title: this.model.attributes.fields.item_name});
+      SavedMeals.create({
+        title: this.model.attributes.fields.item_name,
+        calories: this.model.attributes.fields.nf_calories
+      });
       console.log(this.model.attributes.fields.item_name);
-    //  var view = new SavedMealView({model: selectedMeal});
-    //  this.$el.find('#saved').append(view.render().el);
     }
 
   });
