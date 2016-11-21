@@ -41,7 +41,7 @@ $(function() {
     events: {
       "click .search": "fetchMeals"
     },
-    // preparing basic elelemts: a texbox, a button and a list container
+    // preparing basic elements: a texbox, a button and a list container
     template: "<input type='text' placeholder='search'>" +
                "<button class='search'>Search meal</button>" +
                "<ul id='meal-list'></ul>",
@@ -78,8 +78,51 @@ $(function() {
     }
   });
 
-  var SavedMeals = Backbone.Collection.extend({
-    // TODO: will use local storage for selected meals
+  var SavedMeal = Backbone.Model.extend({
+    defaults: function() {
+      return {
+        title: 'new saved meal',
+        order: SavedMeals.nextOrder()
+      };
+    }
+  });
+
+  var SavedMealsList = Backbone.Collection.extend({
+    model: SavedMeal,
+    localStorage: new Backbone.LocalStorage('savedmeals-backbone'),
+    nextOrder: function() {
+      if(!this.length) return 1;
+      return this.last().get('order') + 1;
+    },
+    comparator: 'order'
+  });
+
+  var SavedMeals = new SavedMealsList();
+
+  // http://codebyexample.info/2012/03/06/backbone-baby-steps/
+  var SavedMealView = Backbone.View.extend({
+
+    tagName: 'div',
+    className: 'mealContainer',
+    template:$("#mealTemplate").html(),
+    events: {
+      'click a.destroy' : 'clear'
+    },
+    initialize: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'destroy', this.remove);
+    },
+    render: function() {
+      console.log(this.model.toJSON());
+      var tmpl = _.template(this.template);
+      this.$el.html(tmpl(this.model.toJSON()));
+      console.log(this.$el.html(tmpl(this.model.toJSON())));
+    //  this.$el.html(tmpl('sdfa'));
+      return this;
+    },
+    clear: function() {
+      this.model.destroy();
+    }
   });
 
   var MealView = Backbone.View.extend({
@@ -94,6 +137,8 @@ $(function() {
       if (options.model)
       this.model = options.model;
       console.log(this.model);
+      this.listenTo(SavedMeals, 'add', this.addOne);
+      SavedMeals.fetch();
     },
 
     render: function() {
@@ -104,13 +149,20 @@ $(function() {
       return this;
     },
 
-    add: function(retrievedMeal) {
-      // TODO: adding selected meal to SavedMeals
+    addOne: function(selectedMeal) {
+      var view = new SavedMealView({model: selectedMeal});
+      this.$el.find('#saved').append(view.render().el);
     },
+
+    add: function(){
+      SavedMeals.create({title: this.model.attributes.fields.item_name});
+      console.log(this.model.attributes.fields.item_name);
+    //  var view = new SavedMealView({model: selectedMeal});
+    //  this.$el.find('#saved').append(view.render().el);
+    }
 
   });
 
   var search = new MealSearch();
   $('#main').html(search.render().el);
-  var savedMealss = new SavedMeals();
 });
