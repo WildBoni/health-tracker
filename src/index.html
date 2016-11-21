@@ -22,10 +22,11 @@
   <div id="main"></div>
 
   <div id="saved">
-    <div class="mealContainer">
-    </div>
-    <script id="mealTemplate" type="text/template">
-      <div><%= title %></div>
+    <script type="text/template" id="item-template">
+      <div class="view">
+        <label><%- title %></label>
+        <button class="destroy">X</button>
+      </div>
     </script>
   </div>
   <script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>

@@ -101,23 +101,17 @@ $(function() {
 
   // http://codebyexample.info/2012/03/06/backbone-baby-steps/
   var SavedMealView = Backbone.View.extend({
-
-    tagName: 'div',
-    className: 'mealContainer',
-    template:$("#mealTemplate").html(),
+    el: $('#saved'),
+    template: _.template($('#item-template').html()),
     events: {
-      'click a.destroy' : 'clear'
+      'click button.destroy' : 'clear'
     },
     initialize: function() {
       this.listenTo(this.model, 'change', this.render);
       this.listenTo(this.model, 'destroy', this.remove);
     },
     render: function() {
-      console.log(this.model.toJSON());
-      var tmpl = _.template(this.template);
-      this.$el.html(tmpl(this.model.toJSON()));
-      console.log(this.$el.html(tmpl(this.model.toJSON())));
-    //  this.$el.html(tmpl('sdfa'));
+      this.$el.html(this.template(this.model.toJSON()));
       return this;
     },
     clear: function() {
@@ -151,7 +145,8 @@ $(function() {
 
     addOne: function(selectedMeal) {
       var view = new SavedMealView({model: selectedMeal});
-      this.$el.find('#saved').append(view.render().el);
+      this.$el.find('#saved-meals').append(view.render().el);
+      console.log(this.$el.find('#saved-meals').append(view.render().el));
     },
 
     add: function(){
