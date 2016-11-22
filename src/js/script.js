@@ -103,7 +103,8 @@ $(function() {
   // A good post for Backbone noobs like me!
   // http://codebyexample.info/2012/03/06/backbone-baby-steps/
   var SavedMealView = Backbone.View.extend({
-    el: $('#saved-meal'),
+    el: $('#saved-meals'),
+    tagName: 'li',
     template: _.template($('#item-template').html()),
     events: {
       'click button.destroy' : 'clear'
@@ -189,6 +190,7 @@ $(function() {
 
     addAll: function() {
       SavedMeals.each(this.addOne, this);
+      console.log('dfeee');
     },
   });
 
