@@ -103,7 +103,7 @@ $(function() {
   // A good post for Backbone noobs like me!
   // http://codebyexample.info/2012/03/06/backbone-baby-steps/
   var SavedMealView = Backbone.View.extend({
-    el: $('#saved'),
+    el: $('#saved-meal'),
     template: _.template($('#item-template').html()),
     events: {
       'click button.destroy' : 'clear'
@@ -133,10 +133,6 @@ $(function() {
       if (options.model)
       this.model = options.model;
       //console.log(this.model);
-      this.listenTo(SavedMeals, 'add', this.addOne);
-      this.listenTo(SavedMeals, 'reset', this.addAll);
-      this.listenTo(SavedMeals, 'all', this.render);
-      SavedMeals.fetch();
     },
 
     render: function() {
@@ -147,26 +143,56 @@ $(function() {
       return this;
     },
 
-    addOne: function(selectedMeal) {
-      var view = new SavedMealView({model: selectedMeal});
-      this.$el.find('#saved-meals').append(view.render().el);
-      console.log(this.$el.find('#saved-meals').append(view.render().el));
-    },
-
-    addAll: function() {
-      SavedMeals.each(this.addOne, this);
-    },
-
     add: function(){
       SavedMeals.create({
         title: this.model.attributes.fields.item_name,
         calories: this.model.attributes.fields.nf_calories
       });
-      console.log(this.model.attributes.fields.item_name);
+      console.log(this.model.attributes.fields.item_name + this.model.attributes.fields.nf_calories);
     }
 
   });
 
+  var MealApp = Backbone.View.extend({
+    el: $("#saved-meals-list"),
+
+    initialize: function() {
+      this.listenTo(SavedMeals, 'add', this.addOne);
+      this.listenTo(SavedMeals, 'reset', this.addAll);
+      this.listenTo(SavedMeals, 'all', this.render);
+      SavedMeals.fetch(
+        {success: this.rendermeal.bind(this)}
+      );
+    },
+
+    rendermeal: function(meal) {
+      var savedmealview;
+      // clearing the list before updating it with new data
+      // thanks to andrewR and its suggestion in this thread
+      // https://discussions.udacity.com/t/cannot-delete-old-results-when-a-new-search-item-is-submitted/199056/4
+      for (var n in meal.models) {
+        savedmealview = new SavedMealView({model: meal.models[n]});
+        console.log(meal.models[n]);
+        this.$el.find('#saved-meals-list').append(savedmealview.render().el);
+      }
+    },
+
+    render: function() {
+
+    },
+
+    addOne: function(selectedMeal) {
+      var view = new SavedMealView({model: selectedMeal});
+      this.$el.find('#saved-meals-list').append(view.render().el);
+      console.log(this.$el.find('#saved-meals-list').append(view.render().el));
+    },
+
+    addAll: function() {
+      SavedMeals.each(this.addOne, this);
+    },
+  });
+
   var search = new MealSearch();
+  var app = new MealApp;
   $('#main').html(search.render().el);
 });
