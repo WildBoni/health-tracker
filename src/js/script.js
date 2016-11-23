@@ -32,7 +32,7 @@ $(function() {
     // parse method return the desired portion of API data
     parse: function(response) {
       // logs array of objects
-      console.log(response.hits);
+      // console.log(response.hits);
       return response.hits;
     }
   });
@@ -98,12 +98,12 @@ $(function() {
     comparator: 'order'
   });
 
-  var SavedMeals = new SavedMealsList();
+  var SavedMeals = new SavedMealsList;
 
   // A good post for Backbone noobs like me!
   // http://codebyexample.info/2012/03/06/backbone-baby-steps/
   var SavedMealView = Backbone.View.extend({
-    el: $('#saved-meals'),
+
     tagName: 'li',
     template: _.template($('#item-template').html()),
     events: {
@@ -161,36 +161,19 @@ $(function() {
       this.listenTo(SavedMeals, 'add', this.addOne);
       this.listenTo(SavedMeals, 'reset', this.addAll);
       this.listenTo(SavedMeals, 'all', this.render);
-      SavedMeals.fetch(
-        {success: this.rendermeal.bind(this)}
-      );
-    },
-
-    rendermeal: function(meal) {
-      var savedmealview;
-      // clearing the list before updating it with new data
-      // thanks to andrewR and its suggestion in this thread
-      // https://discussions.udacity.com/t/cannot-delete-old-results-when-a-new-search-item-is-submitted/199056/4
-      for (var n in meal.models) {
-        savedmealview = new SavedMealView({model: meal.models[n]});
-        console.log(meal.models[n]);
-        this.$el.find('#saved-meals-list').append(savedmealview.render().el);
-      }
+      SavedMeals.fetch();
     },
 
     render: function() {
-
     },
 
     addOne: function(selectedMeal) {
       var view = new SavedMealView({model: selectedMeal});
-      this.$el.find('#saved-meals-list').append(view.render().el);
-      console.log(this.$el.find('#saved-meals-list').append(view.render().el));
+      this.$('#saved-meals').append(view.render().el);
     },
 
     addAll: function() {
       SavedMeals.each(this.addOne, this);
-      console.log('dfeee');
     },
   });
 
