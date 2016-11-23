@@ -6,6 +6,52 @@ var applicationId = 'cce231b3';
 var applicationKey = 'b19085c7c7974513d3dd5df7073852d5';
 
 $(function() {
+
+  // Router built following this tutorial
+  // https://cdnjs.com/libraries/backbone.js/tutorials/what-is-a-router
+  // And these expamples
+  // https://github.com/ryanricard/backbone-routes-example
+  var AppRouter = Backbone.Router.extend({
+    routes: {
+      "": "newmeal",
+      "newmeal": "newmeal",
+      "mymeal": "mymeal"
+    },
+
+    deselect: function() {
+      $('ul#menu li').css('background-color', 'white');
+    },
+
+    select: function(voice) {
+      this.deselect();
+      $(voice).css('background-color', 'red');
+    },
+
+    hide: function() {
+      $('div.pages').hide();
+    },
+
+    show: function(page) {
+      this.hide();
+      $(page).show();
+    },
+
+    newmeal: function() {
+      this.show('div#main');
+      this.select('li.newmeal');
+    },
+
+    mymeal: function() {
+      this.show('div#saved-meals-list');
+      this.select('li.mymeals');
+    }
+  });
+
+  var app_router = new AppRouter;
+
+  app_router.on('route:defaultRoute', function(actions) {
+    alert(actions);
+  });
   // not really using this module... Everything goes inside collection
   // as explained in http://backbonejs.org/#API-integration
   var Meal = Backbone.Model.extend({
@@ -155,16 +201,31 @@ $(function() {
   });
 
   var MealApp = Backbone.View.extend({
-    el: $("#saved-meals-list"),
+    el: $("body"),
 
     initialize: function() {
+      this.router = new AppRouter();
+      Backbone.history.start();
       this.listenTo(SavedMeals, 'add', this.addOne);
       this.listenTo(SavedMeals, 'reset', this.addAll);
       this.listenTo(SavedMeals, 'all', this.render);
       SavedMeals.fetch();
     },
 
+    events: {
+      'click ul#menu li.newmeal a': 'displayNewMeals',
+      'click ul#menu li.mymeals a': 'displayMyMeals'
+    },
+
     render: function() {
+    },
+
+    displayNewMeals: function() {
+      this.router.navigate("newmeal", true);
+    },
+
+    displayMyMeals: function() {
+      this.router.navigate("mymeal", true);
     },
 
     addOne: function(selectedMeal) {
