@@ -77,8 +77,7 @@ $(function() {
 
     // parse method return the desired portion of API data
     parse: function(response) {
-      // logs array of objects
-      // console.log(response.hits);
+      // returns array of objects
       return response.hits;
     }
   });
@@ -128,7 +127,7 @@ $(function() {
     defaults: function() {
       return {
         title: 'new saved meal',
-        calories: '0',
+        calories: 0,
         order: SavedMeals.nextOrder()
       };
     }
@@ -141,7 +140,15 @@ $(function() {
       if(!this.length) return 1;
       return this.last().get('order') + 1;
     },
-    comparator: 'order'
+    comparator: 'order',
+
+    // using reduce()
+    // http://stackoverflow.com/questions/7722048/getting-the-sum-of-a-collection-all-models-with-backbone-js
+    caloriesTotal: function() {
+      return this.reduce(function(memo, value) {
+        return memo + value.get("calories");
+      }, 0);
+    }
   });
 
   var SavedMeals = new SavedMealsList;
@@ -179,7 +186,6 @@ $(function() {
     initialize: function(options) {
       if (options.model)
       this.model = options.model;
-      //console.log(this.model);
     },
 
     render: function() {
@@ -193,9 +199,8 @@ $(function() {
     add: function(){
       SavedMeals.create({
         title: this.model.attributes.fields.item_name,
-        calories: this.model.attributes.fields.nf_calories
+        calories: parseInt(this.model.attributes.fields.nf_calories)
       });
-      console.log(this.model.attributes.fields.item_name + this.model.attributes.fields.nf_calories);
     }
 
   });
@@ -238,7 +243,8 @@ $(function() {
     },
   });
 
-  var search = new MealSearch();
   var app = new MealApp;
+  var search = new MealSearch();
   $('#main').html(search.render().el);
+  alert(SavedMeals.caloriesTotal());
 });
