@@ -205,11 +205,25 @@ $(function() {
 
   });
 
+  var TotalCalories = Backbone.View.extend({
+    el: $("body"),
+    initialize: function() {
+      console.log('fd');
+      this.listenTo(SavedMeals, 'sync remove', this.render);
+    },
+    render: function() {
+      console.log('fdch');
+      var totCal = SavedMeals.caloriesTotal();
+      this.$('#calories').append(totCal);
+    }
+  });
+
   var MealApp = Backbone.View.extend({
     el: $("body"),
 
     initialize: function() {
       this.router = new AppRouter();
+      var totalCalories = new TotalCalories();
       Backbone.history.start();
       this.listenTo(SavedMeals, 'add', this.addOne);
       this.listenTo(SavedMeals, 'reset', this.addAll);
@@ -246,5 +260,5 @@ $(function() {
   var app = new MealApp;
   var search = new MealSearch();
   $('#main').html(search.render().el);
-  alert(SavedMeals.caloriesTotal());
+
 });
