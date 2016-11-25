@@ -19,12 +19,12 @@ $(function() {
     },
 
     deselect: function() {
-      $('ul#menu li').css('background-color', 'white');
+      $('ul#menu li').removeClass('uk-active');
     },
 
     select: function(voice) {
       this.deselect();
-      $(voice).css('background-color', 'red');
+      $(voice).addClass('uk-active');
     },
 
     hide: function() {
@@ -87,8 +87,8 @@ $(function() {
       "click .search": "fetchMeals"
     },
     // preparing basic elements: a texbox, a button and a list container
-    template: "<input type='text' placeholder='search'>" +
-               "<button class='search'>Search meal</button>" +
+    template: "<input type='text' placeholder='search meal'>" +
+               "<button class='search uk-button uk-button-primary'>Search meal</button>" +
                "<ul id='meal-list'></ul>",
 
     initialize: function(options) {
