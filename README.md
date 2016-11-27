@@ -9,5 +9,6 @@ I built this app as a project for Udacity Front End Web Developer Nanodegree.
 * Underscore
 * Jquery
 * Bower
+* UIkit
 
-# Health Tracker is under development
+# Health Tracker is under development, but you can try it anyway [at this link](https://wildboni.github.io/lake-map/public/index.html)
