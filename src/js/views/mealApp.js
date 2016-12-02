@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'backbone.localStorage', 'router', 'views/totalCalories',  'collections/SavedMealsList',  'views/SavedMealView'], function(_, Backbone, BackboneLocSt, AppRouter, TotalCalories, SavedMealsList, SavedMealView) {
+define(['underscore', 'backbone', 'backbone.localStorage', 'router', 'views/totalCalories',  'collections/savedMealsList',  'views/savedMealView'], function(_, Backbone, BackboneLocSt, AppRouter, TotalCalories, SavedMealsList, SavedMealView) {
   var MealApp = Backbone.View.extend({
     el: $("body"),
 

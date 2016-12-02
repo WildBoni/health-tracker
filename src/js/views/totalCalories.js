@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'backbone.localStorage', 'collections/SavedMealsList'], function(_, Backbone, BackboneLocSt, SavedMeals) {
+define(['underscore', 'backbone', 'backbone.localStorage', 'collections/savedMealsList'], function(_, Backbone, BackboneLocSt, SavedMeals) {
   var TotalCalories = Backbone.View.extend({
     el: $("body"),
     initialize: function() {

@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'backbone.localStorage', 'collections/SavedMealsList'], function(_, Backbone, BackboneLocSt, SavedMealsList) {
+define(['underscore', 'backbone', 'backbone.localStorage', 'collections/savedMealsList'], function(_, Backbone, BackboneLocSt, SavedMealsList) {
   var MealView = Backbone.View.extend({
 
     tagName: 'li',
