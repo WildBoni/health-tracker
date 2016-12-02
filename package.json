@@ -1,0 +1,22 @@
+{
+  "name": "healt-tracker",
+  "version": "1.0.0",
+  "description": "Health Tracker is an application that helps you keep track of the calories amount you assume every day",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WildBoni/health-tracker.git"
+  },
+  "author": "Davide Bonifacio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WildBoni/health-tracker/issues"
+  },
+  "homepage": "https://github.com/WildBoni/health-tracker#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
